@@ -59,8 +59,8 @@ void initialize(Planet *planet)
         x7 = (double)rand() / (double)RAND_MAX;
 
         radius =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
-        planet[i].pos.x =  (1.0 - 2.0*x2) * radius;
-        planet[i].pos.y =  pow( radius*radius - planet[i].pos.y*planet[i].pos.z, 0.5 ) * cos(2.0 * PI * x3);
+        (*planet[i].pos).x =  (1.0 - 2.0*x2) * radius;
+        (*planet[i].pos).y =  pow( radius*radius - planet[i].pos.y*planet[i].pos.z, 0.5 ) * cos(2.0 * PI * x3);
         planet[i].pos.z =  pow( radius*radius - planet[i].pos.y*planet[i].pos.z, 0.5 ) * sin(2.0 * PI * x3);
 
 
