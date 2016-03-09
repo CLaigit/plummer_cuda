@@ -60,9 +60,9 @@ void initialize(Planet *planet)
         x7 = (double)rand() / (double)RAND_MAX;
 
         radius =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
-        (*planet[i].pos).x =  (1.0 - 2.0*x2) * radius;
-        (*planet[i].pos).y =  pow( radius*radius - (*planet[i].pos).y*(*planet[i].pos).z, 0.5 ) * cos(2.0 * PI * x3);
-        (*planet[i].pos).z =  pow( radius*radius - (*planet[i].pos).y*(*planet[i].pos).z, 0.5 ) * sin(2.0 * PI * x3);
+        planet[i].pos->x =  (1.0 - 2.0*x2) * radius;
+        planet[i].pos->y =  pow( radius*radius - planet[i].pos->y*planet[i].pos->z, 0.5 ) * cos(2.0 * PI * x3);
+        planet[i].pos->z =  pow( radius*radius - planet[i].pos->y*planet[i].pos->z, 0.5 ) * sin(2.0 * PI * x3);
 
 
         // while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
@@ -73,14 +73,14 @@ void initialize(Planet *planet)
         // q = x4;
         //
         //
-        // vra =  q * pow(2.0, 0.5) * pow(1 + planet[i]->r * planet[i]->r, -0.25);					/* set initial position */
-        // planet[i]->vel[2] =  (1.0 - 2.0 * x6) * vra;
-        // planet[i]->vel[0] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * cos(2.0 * PI * x7);
-        // planet[i]->vel[1] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * sin(2.0 * PI * x7);
+        // vra =  q * pow(2.0, 0.5) * pow(1 planet[i]->r ->anet[i]->r,->0.25);					/* set initial position */
+        //planet[i]->vel->2] =  (1.0 - 2.0 * x6) * vra;
+        //planet[i]->vel->0] =  pow( vra * vra planet[i]->ve->2] planet[i]->ve->2], 0.5) * cos(2.0 * PI * x7);
+        //planet[i]->vel->1] =  pow( vra * vra planet[i]->ve->2] planet[i]->ve->2], 0.5) * sin(2.0 * PI * x7);
 
-        (*planet[i].vel).x =  0;
-        (*planet[i].vel).y =  0;
-        (*planet[i].vel).z =  0;
+        planet[i].vel->x =  0;
+        planet[i].vel->y =  0;
+        planet[i].vel->z =  0;
     }
 }
 
@@ -95,8 +95,8 @@ int main(int argc, char **argv)
 
     const size_t bytes = 2 * NUM_PLANET * sizeof(Vec_3);
 
-    Vec_3* buf = (Vec_3*)malloc(bytes);
-    Vec_3* d_buf;
+    double* buf = (double *)malloc(bytes);
+    double* d_buf;
     cudaMalloc(&d_buf, bytes);
 
     Planet planet = (Planet){(Vec_3 *)buf, ((Vec_3 *)buf) + NUM_PLANET};
