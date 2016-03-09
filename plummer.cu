@@ -20,19 +20,18 @@
 #define DT 0.1
 #define SOFTPARAMETER 0.00001
 
-void initialize(Planet *planet);
-
-__global__ void leap_step(double *pos, double *vel);
-
-__global__ void accel(double *pos, double *vel);
-
-__global__ void printstate(double *pos);					/* number of points         */
 
 
 typedef struct Planet{          /*define a structure to store the position, velocity and dt for a planet*/
   double* pos;
   double* vel;
 } Planet;
+
+void initialize(Planet *planet);
+__global__ void leap_step(double *pos, double *vel);
+__global__ void accel(double *pos, double *vel);
+__global__ void printstate(double *pos);					/* number of points         */
+
 
 void initialize(Planet *planet)
 {
