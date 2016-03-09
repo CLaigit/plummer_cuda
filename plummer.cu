@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 
     const size_t bytes = 2 * NUM_PLANET * sizeof(Vec_3);
 
-    Vec_3 buf = (double*)malloc(bytes);
+    Vec_3 buf = (Vec_3)malloc(bytes);
     Vec_3 d_buf;
     cudaMalloc(&d_buf, bytes);
 
