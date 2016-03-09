@@ -28,8 +28,8 @@ typedef struct Vec_3{
 
 
 typedef struct Planet{          /*define a structure to store the position, velocity and dt for a planet*/
-  Vec_3 pos;            // WHY USE POINTER INSTEAD OF ACTUAL DATA?? Because I am using
-  Vec_3 vel;            // I THINK IF U CHANGE THIS, IT MIGHT WORK
+  Vec_3* pos;            // WHY USE POINTER INSTEAD OF ACTUAL DATA?? Because I am using
+  Vec_3* vel;            // I THINK IF U CHANGE THIS, IT MIGHT WORK
 } Planet;
 
 void initialize(Planet *planet);
@@ -99,8 +99,8 @@ int main(int argc, char **argv)
     Vec_3* d_buf;
     cudaMalloc(&d_buf, bytes);
 
-    Planet planet = (Planet){(Vec_3)buf, ((Vec_3)buf) + NUM_PLANET};
-    Planet d_planet = (Planet){(Vec_3)d_buf, ((Vec_3)d_buf) + NUM_PLANET};
+    Planet planet = (Planet){(Vec_3 *)buf, ((Vec_3 *)buf) + NUM_PLANET};
+    Planet d_planet = (Planet){(Vec_3 *)d_buf, ((Vec_3 *)d_buf) + NUM_PLANET};
     const unsigned long nBlocks = (NUM_PLANET + BLOCK_SIZE - 1)/BLOCK_SIZE;
 
     initialize(&planet);
