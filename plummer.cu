@@ -132,7 +132,7 @@ __global__ void accel(double *pos, double *vel){
     const unsigned int tdx = threadIdx;
 
     double ax = 0.0, ay = 0.0, az = 0.0;
-    double d_x = pos[i].pos[0], d_y = pos[i].pos[1], d_z = pos[i].pos[0];
+    double d_x = *pos[i].pos, d_y = *(pos[i].pos + 1), d_z = *(pos[i].pos + 2);
     double norm;
     int j, k;
 
