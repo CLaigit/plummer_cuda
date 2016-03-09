@@ -134,10 +134,10 @@ int main(int argc, char **argv)
  */
 __global__ void accel(Vec_3 *pos, Vec_3 *vel){
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-    const unsigned int tdx = threadIdx;
+    const unsigned int tdx = threadIdx.x;
 
     double ax = 0.0, ay = 0.0, az = 0.0;
-    double d_x = pos[i].pos.x, d_y = pos[i].pos.y, d_z = pos[i].pos.z;
+    double d_x = pos[i].x, d_y = pos[i].y, d_z = pos[i].z;
     double norm;
     int j, k;
 
@@ -146,9 +146,9 @@ __global__ void accel(Vec_3 *pos, Vec_3 *vel){
     __shared__ double sz[BLOCK_SIZE];
 
     for(j = 0; j < gridDim.x; j++){
-        sx[tdx] = pos[j * BLOCK_SIZE + tdx].pos[0];
-        sy[tdx] = pos[j * BLOCK_SIZE + tdx].pos[1];
-        sz[tdx] = pos[j * BLOCK_SIZE + tdx].pos[2];
+        sx[tdx] = pos[j * BLOCK_SIZE + tdx].x;
+        sy[tdx] = pos[j * BLOCK_SIZE + tdx].y;
+        sz[tdx] = pos[j * BLOCK_SIZE + tdx].z;
         __syncthreads();
 
         for(k = 0; k < BLOCK_SIZE; k++){
@@ -161,9 +161,9 @@ __global__ void accel(Vec_3 *pos, Vec_3 *vel){
     }
 
     if(i < NUM_PLANET){
-        vel[i].vel[0] += 0.5 * DT * ax;
-        vel[i].vel[1] += 0.5 * DT * ay;
-        vel[i].vel[2] += 0.5 * DT * az;
+        vel[i].x += 0.5 * DT * ax;
+        vel[i].y += 0.5 * DT * ay;
+        vel[i].z += 0.5 * DT * az;
     }
 }
 
@@ -171,9 +171,9 @@ __global__ void leap_step(Vec_3 *pos, Vec_3 *vel){
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(i < NUM_PLANET){
-        pos[i].pos[0] += DT * vel[i].vel[0];
-        pos[i].pos[1] += DT * vel[i].vel[1];
-        pos[i].pos[2] += DT * vel[i].vel[2];
+        pos[i].x += DT * vel[i].x;
+        pos[i].y += DT * vel[i].y;
+        pos[i].z += DT * vel[i].z;
     }
 }
 
@@ -186,6 +186,6 @@ __global__ void printstate(Vec_3 *pos)					/* number of points         */
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < NUM_PLANET){		/* loop over all points...  */
-      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, pos[i].pos[0], pos[i].pos[1], pos[i].pos[2]);
+      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, pos[i].x, pos[i].y, pos[i].z);
     }
 }
