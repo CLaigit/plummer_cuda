@@ -103,7 +103,7 @@ int main(int argc, char **argv)
     Planet d_planet = (Planet){(Vec_3 *)d_buf, ((Vec_3 *)d_buf) + NUM_PLANET};
     const unsigned long nBlocks = (NUM_PLANET + BLOCK_SIZE - 1)/BLOCK_SIZE;
 
-    initialize(planet);
+    initialize(&planet);
 
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, NUM_PLANET * 512);
 
