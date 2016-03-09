@@ -37,6 +37,7 @@ void initialize(Planet *planet)
 {
     int i, j;
     double x1, x2, x3, x4, x5, x6, x7;
+    double radius, vra;
     double q;
 
     srand (time(NULL));
@@ -44,7 +45,7 @@ void initialize(Planet *planet)
 
 /*Mercury*/
     for (i = 0; i < NUM_PLANET; i++){
-        x1 = (double) rand() / (double)RAND_MAX;
+        x1 = (double)rand() / (double)RAND_MAX;
         x2 = (double)rand() / (double)RAND_MAX;					/* set initial position */
         x3 = (double)rand() / (double)RAND_MAX;
         x4 = (double)rand() / (double)RAND_MAX;
@@ -52,10 +53,10 @@ void initialize(Planet *planet)
         x6 = (double)rand() / (double)RAND_MAX;
         x7 = (double)rand() / (double)RAND_MAX;
 
-        planet[i].r =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
-        planet[i].z =  (1.0 - 2.0*x2) * planet[i].r;
-        planet[i].x =  pow( planet[i].r*planet[i].r - planet[i].z*planet[i].z, 0.5 ) * cos(2.0 * PI * x3);
-        planet[i].y =  pow( planet[i].r*planet[i].r - planet[i].z*planet[i].z, 0.5 ) * sin(2.0 * PI * x3);
+        radius =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
+        planet[i].pos[2] =  (1.0 - 2.0*x2) * radius;
+        planet[i].pos[0] =  pow( radius*radius - planet[i].pos[2]*planet[i].pos[2], 0.5 ) * cos(2.0 * PI * x3);
+        planet[i].pos[1] =  pow( radius*radius - planet[i].pos[2]*planet[i].pos[2], 0.5 ) * sin(2.0 * PI * x3);
 
 
         // while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
@@ -66,14 +67,14 @@ void initialize(Planet *planet)
         // q = x4;
         //
         //
-        // planet[i].v =  q * pow(2.0, 0.5) * pow(1 + planet[i].r * planet[i].r, -0.25);					/* set initial position */
-        // planet[i].vz =  (1.0 - 2.0 * x6) * planet[i].v;
-        // planet[i].vx =  pow( planet[i].v * planet[i].v - planet[i].vz * planet[i].vz, 0.5) * cos(2.0 * PI * x7);
-        // planet[i].vy =  pow( planet[i].v * planet[i].v - planet[i].vz * planet[i].vz, 0.5) * sin(2.0 * PI * x7);
+        // vra =  q * pow(2.0, 0.5) * pow(1 + planet[i].r * planet[i].r, -0.25);					/* set initial position */
+        // planet[i].vel[2] =  (1.0 - 2.0 * x6) * vra;
+        // planet[i].vel[0] =  pow( vra * vra - planet[i].vel[2] * planet[i].vel[2], 0.5) * cos(2.0 * PI * x7);
+        // planet[i].vel[1] =  pow( vra * vra - planet[i].vel[2] * planet[i].vel[2], 0.5) * sin(2.0 * PI * x7);
 
-        planet[i].vx =  0;
-        planet[i].vy =  0;
-        planet[i].vz =  0;
+        planet[i].vel[0] =  0;
+        planet[i].vel[1] =  0;
+        planet[i].vel[2] =  0;
     }
 }
 
@@ -146,10 +147,10 @@ __global__ void accel(double *pos, double *vel){
         __syncthreads();
 
         for(k = 0; k < BLOCK_SIZE; k++){
-            norm = pow(SOFTPARAMETER + (d_x - sx[j]) * (d_x - sx[j]) + (d_y - sy[j]) * (d_y - sy[j]) + (d_z - sz[j]) * (d_z - sz[j]), 1.5 );
-            ax -= (1.0 * GM/NUM_PLANET) * (d_x - sx[j]) / norm;
-            ay -= (1.0 * GM/NUM_PLANET) * (d_y - sy[j]) / norm;
-            az -= (1.0 * GM/NUM_PLANET) * (d_z - sz[j]) / norm;
+            norm = pow(SOFTPARAMETER + (d_x - sx[k]) * (d_x - sx[k]) + (d_y - sy[k]) * (d_y - sy[k]) + (d_z - sz[k]) * (d_z - sz[k]), 1.5 );
+            ax -= (1.0 * GM/NUM_PLANET) * (d_x - sx[k]) / norm;
+            ay -= (1.0 * GM/NUM_PLANET) * (d_y - sy[k]) / norm;
+            az -= (1.0 * GM/NUM_PLANET) * (d_z - sz[k]) / norm;
         }
         __syncthreads();
     }
@@ -180,6 +181,6 @@ __global__ void printstate(double *pos)					/* number of points         */
     const unsigned long i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < NUM_PLANET){		/* loop over all points...  */
-      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, planet[i].y,  planet[i].z);
+      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, planet[i].pos[0], planet[i].pos[1], planet[i].pos[2]);
     }
 }
