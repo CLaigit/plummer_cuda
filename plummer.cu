@@ -77,9 +77,9 @@ void initialize(Planet *planet)
         // planet[i]->vel[0] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * cos(2.0 * PI * x7);
         // planet[i]->vel[1] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * sin(2.0 * PI * x7);
 
-        planet[i].vel.x =  0;
-        planet[i].vel.y =  0;
-        planet[i].vel.z =  0;
+        (*planet[i].vel).x =  0;
+        (*planet[i].vel).y =  0;
+        (*planet[i].vel).z =  0;
     }
 }
 
