@@ -20,11 +20,16 @@
 #define DT 0.1
 #define SOFTPARAMETER 0.00001
 
+typedef struct Vec_3{
+    double x;
+    double y;
+    double z;
+}Vec_3;
 
 
 typedef struct Planet{          /*define a structure to store the position, velocity and dt for a planet*/
-  double* pos;
-  double* vel;
+  Vec_3 *pos;
+  Vec_3 *vel;
 } Planet;
 
 void initialize(Planet *planet);
@@ -54,9 +59,9 @@ void initialize(Planet *planet)
         x7 = (double)rand() / (double)RAND_MAX;
 
         radius =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
-        planet[i].pos[2] =  (1.0 - 2.0*x2) * radius;
-        planet[i].pos[0] =  pow( radius*radius - planet[i].pos[2]*planet[i].pos[2], 0.5 ) * cos(2.0 * PI * x3);
-        planet[i].pos[1] =  pow( radius*radius - planet[i].pos[2]*planet[i].pos[2], 0.5 ) * sin(2.0 * PI * x3);
+        planet[i].pos.x =  (1.0 - 2.0*x2) * radius;
+        planet[i].pos.y =  pow( radius*radius - planet[i].pos.y*planet[i].pos.z, 0.5 ) * cos(2.0 * PI * x3);
+        planet[i].pos.z =  pow( radius*radius - planet[i].pos.y*planet[i].pos.z, 0.5 ) * sin(2.0 * PI * x3);
 
 
         // while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
@@ -72,9 +77,9 @@ void initialize(Planet *planet)
         // planet[i]->vel[0] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * cos(2.0 * PI * x7);
         // planet[i]->vel[1] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * sin(2.0 * PI * x7);
 
-        planet[i].vel[0] =  0;
-        planet[i].vel[1] =  0;
-        planet[i].vel[2] =  0;
+        planet[i].vel.x =  0;
+        planet[i].vel.y =  0;
+        planet[i].vel.z =  0;
     }
 }
 
@@ -93,8 +98,8 @@ int main(int argc, char **argv)
     double *d_buf;
     cudaMalloc(&d_buf, bytes);
 
-    Planet planet = (Planet){(double*)buf, ((double*)buf) + NUM_PLANET};
-    Planet d_planet = (Planet){(double*)d_buf, ((double*)d_buf) + NUM_PLANET};
+    Planet planet = (Planet){(Vec_3 *)buf, ((Vec_3 *)buf) + NUM_PLANET};
+    Planet d_planet = (Planet){(Vec_3 *)d_buf, ((Vec_3 *)d_buf) + NUM_PLANET};
     const unsigned long nBlocks = (NUM_PLANET + BLOCK_SIZE - 1)/BLOCK_SIZE;
 
     initialize(&planet);
@@ -132,7 +137,7 @@ __global__ void accel(double *pos, double *vel){
     const unsigned int tdx = threadIdx;
 
     double ax = 0.0, ay = 0.0, az = 0.0;
-    double d_x = *pos[i].pos, d_y = *(pos[i].pos + 1), d_z = *(pos[i].pos + 2);
+    double d_x = pos[i].pos.x, d_y = pos[i].pos.y, d_z = pos[i].pos.z;
     double norm;
     int j, k;
 
