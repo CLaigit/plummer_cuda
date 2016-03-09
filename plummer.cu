@@ -23,8 +23,8 @@
 
 
 typedef struct Planet{          /*define a structure to store the position, velocity and dt for a planet*/
-  double pos[3];
-  double vel[3];
+  double* pos;
+  double* vel;
 } Planet;
 
 void initialize(Planet *planet);
