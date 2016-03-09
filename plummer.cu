@@ -80,7 +80,7 @@ void initialize(Planet *planet)
 
 int main(int argc, char **argv)
 {
-    int i, mstep, nout, nstep;
+    int mstep, nout, nstep;
 
     mstep = 100;			/* number of steps to take  */
     nout = 1;		    /* steps between outputs    */
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
            cudaDeviceSynchronize();
     }
     if (mstep % nout == 0)			/* if last output wanted    */
-         printstate(planet);		/* then output last step    */
+        printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos);
 
     free(buf);
     cudaFree(d_buf);
@@ -140,10 +140,10 @@ __global__ void accel(double *pos, double *vel){
     __shared__ double sy[BLOCK_SIZE];
     __shared__ double sz[BLOCK_SIZE];
 
-    for(j = 0; j < gridDim; j++){
+    for(j = 0; j < gridDim.x; j++){
         sx[tdx] = pos[j * BLOCK_SIZE + tdx][0];
         sy[tdx] = pos[j * BLOCK_SIZE + tdx][1];
-        sz[tdz] = pos[j * BLOCK_SIZE + tdx][2];
+        sz[tdx] = pos[j * BLOCK_SIZE + tdx][2];
         __syncthreads();
 
         for(k = 0; k < BLOCK_SIZE; k++){
@@ -181,6 +181,6 @@ __global__ void printstate(double *pos)					/* number of points         */
     const unsigned long i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < NUM_PLANET){		/* loop over all points...  */
-      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, planet[i].pos[0], planet[i].pos[1], planet[i].pos[2]);
+      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, pos[i][0], pos[i][1], pos[i][2]);
     }
 }
