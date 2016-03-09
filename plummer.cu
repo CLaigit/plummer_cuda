@@ -23,8 +23,8 @@
 
 
 typedef struct Planet{          /*define a structure to store the position, velocity and dt for a planet*/
-  double* pos;
-  double* vel;
+  double pos[3];
+  double vel[3];
 } Planet;
 
 void initialize(Planet *planet);
@@ -128,11 +128,11 @@ int main(int argc, char **argv)
  * accurate unless the timestep dt is fixed from one call to another.
  */
 __global__ void accel(double *pos, double *vel){
-    const unsigned long i = blockIdx.x * blockDim.x + threadIdx.x;
-    const unsigned long tdx = threadIdx;
+    const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int tdx = threadIdx;
 
     double ax = 0.0, ay = 0.0, az = 0.0;
-    double d_x = pos[i][0], d_y = pos[i][1], d_z = pos[i][0];
+    double d_x = pos[i].pos[0], d_y = pos[i].pos[1], d_z = pos[i].pos[0];
     double norm;
     int j, k;
 
@@ -141,9 +141,9 @@ __global__ void accel(double *pos, double *vel){
     __shared__ double sz[BLOCK_SIZE];
 
     for(j = 0; j < gridDim.x; j++){
-        sx[tdx] = pos[j * BLOCK_SIZE + tdx][0];
-        sy[tdx] = pos[j * BLOCK_SIZE + tdx][1];
-        sz[tdx] = pos[j * BLOCK_SIZE + tdx][2];
+        sx[tdx] = pos[j * BLOCK_SIZE + tdx].pos[0];
+        sy[tdx] = pos[j * BLOCK_SIZE + tdx].pos[1];
+        sz[tdx] = pos[j * BLOCK_SIZE + tdx].pos[2];
         __syncthreads();
 
         for(k = 0; k < BLOCK_SIZE; k++){
@@ -156,19 +156,19 @@ __global__ void accel(double *pos, double *vel){
     }
 
     if(i < NUM_PLANET){
-        vel[i][0] += 0.5 * DT * ax;
-        vel[i][1] += 0.5 * DT * ay;
-        vel[i][2] += 0.5 * DT * az;
+        vel[i].vel[0] += 0.5 * DT * ax;
+        vel[i].vel[1] += 0.5 * DT * ay;
+        vel[i].vel[2] += 0.5 * DT * az;
     }
 }
 
 __global__ void leap_step(double *pos, double *vel){
-    const unsigned long i = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(i < NUM_PLANET){
-        pos[i][0] += DT * vel[i][0];
-        pos[i][1] += DT * vel[i][1];
-        pos[i][2] += DT * vel[i][2];
+        pos[i].pos[0] += DT * vel[i].vel[0];
+        pos[i].pos[1] += DT * vel[i].vel[1];
+        pos[i].pos[2] += DT * vel[i].vel[2];
     }
 }
 
@@ -178,9 +178,9 @@ __global__ void leap_step(double *pos, double *vel){
 
 __global__ void printstate(double *pos)					/* number of points         */
 {
-    const unsigned long i = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < NUM_PLANET){		/* loop over all points...  */
-      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, pos[i][0], pos[i][1], pos[i][2]);
+      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, pos[i].pos[0], pos[i].pos[1], pos[i].pos[2]);
     }
 }
