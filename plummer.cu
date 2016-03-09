@@ -28,8 +28,8 @@ typedef struct Vec_3{
 
 
 typedef struct Planet{          /*define a structure to store the position, velocity and dt for a planet*/
-  Vec_3 *pos;
-  Vec_3 *vel;
+  Vec_3 pos;            // WHY USE POINTER INSTEAD OF ACTUAL DATA??
+  Vec_3 vel;            // I THINK IF U CHANGE THIS, IT MIGHT WORK
 } Planet;
 
 void initialize(Planet *planet);
@@ -60,9 +60,9 @@ void initialize(Planet *planet)
         x7 = (double)rand() / (double)RAND_MAX;
 
         radius =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
-        (*planet[i].pos).x =  (1.0 - 2.0*x2) * radius;
-        (*planet[i].pos).y =  pow( radius*radius - (*planet[i].pos).y*(*planet[i].pos).z, 0.5 ) * cos(2.0 * PI * x3);
-        (*planet[i].pos).z =  pow( radius*radius - (*planet[i].pos).y*(*planet[i].pos).z, 0.5 ) * sin(2.0 * PI * x3);
+        planet[i].pos.x =  (1.0 - 2.0*x2) * radius;
+        planet[i].pos.y =  pow( radius*radius - planet[i].pos.y*planet[i].pos.z, 0.5 ) * cos(2.0 * PI * x3);
+        planet[i].pos.z =  pow( radius*radius - planet[i].pos.y*planet[i].pos.z, 0.5 ) * sin(2.0 * PI * x3);
 
 
         // while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
@@ -78,9 +78,9 @@ void initialize(Planet *planet)
         // planet[i]->vel[0] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * cos(2.0 * PI * x7);
         // planet[i]->vel[1] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * sin(2.0 * PI * x7);
 
-        (*planet[i].vel).x =  0;
-        (*planet[i].vel).y =  0;
-        (*planet[i].vel).z =  0;
+        planet[i].vel.x =  0;
+        planet[i].vel.y =  0;
+        planet[i].vel.z =  0;
     }
 }
 
