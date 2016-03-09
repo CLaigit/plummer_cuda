@@ -54,9 +54,9 @@ void initialize(Planet *planet)
         x7 = (double)rand() / (double)RAND_MAX;
 
         radius =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
-        planet[i].pos[2] =  (1.0 - 2.0*x2) * radius;
-        planet[i].pos[0] =  pow( radius*radius - planet[i].pos[2]*planet[i].pos[2], 0.5 ) * cos(2.0 * PI * x3);
-        planet[i].pos[1] =  pow( radius*radius - planet[i].pos[2]*planet[i].pos[2], 0.5 ) * sin(2.0 * PI * x3);
+        planet[i]->pos[2] =  (1.0 - 2.0*x2) * radius;
+        planet[i]->pos[0] =  pow( radius*radius - planet[i]->pos[2]*planet[i]->pos[2], 0.5 ) * cos(2.0 * PI * x3);
+        planet[i]->pos[1] =  pow( radius*radius - planet[i]->pos[2]*planet[i]->pos[2], 0.5 ) * sin(2.0 * PI * x3);
 
 
         // while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
@@ -67,14 +67,14 @@ void initialize(Planet *planet)
         // q = x4;
         //
         //
-        // vra =  q * pow(2.0, 0.5) * pow(1 + planet[i].r * planet[i].r, -0.25);					/* set initial position */
-        // planet[i].vel[2] =  (1.0 - 2.0 * x6) * vra;
-        // planet[i].vel[0] =  pow( vra * vra - planet[i].vel[2] * planet[i].vel[2], 0.5) * cos(2.0 * PI * x7);
-        // planet[i].vel[1] =  pow( vra * vra - planet[i].vel[2] * planet[i].vel[2], 0.5) * sin(2.0 * PI * x7);
+        // vra =  q * pow(2.0, 0.5) * pow(1 + planet[i]->r * planet[i]->r, -0.25);					/* set initial position */
+        // planet[i]->vel[2] =  (1.0 - 2.0 * x6) * vra;
+        // planet[i]->vel[0] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * cos(2.0 * PI * x7);
+        // planet[i]->vel[1] =  pow( vra * vra - planet[i]->vel[2] * planet[i]->vel[2], 0.5) * sin(2.0 * PI * x7);
 
-        planet[i].vel[0] =  0;
-        planet[i].vel[1] =  0;
-        planet[i].vel[2] =  0;
+        planet[i]->vel[0] =  0;
+        planet[i]->vel[1] =  0;
+        planet[i]->vel[2] =  0;
     }
 }
 
@@ -105,17 +105,17 @@ int main(int argc, char **argv)
 
     for (nstep = 0; nstep < mstep; nstep++){	/* loop mstep times in all  */
 	       if (nstep % nout == 0)			/* if time to output state  */
-	           printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos);		/* then call output routine */
+	           printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet->pos);		/* then call output routine */
            cudaDeviceSynchronize();
-           accel<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
+           accel<<<nBlocks, BLOCK_SIZE>>>(d_planet->pos, d_planet->vel);
            cudaDeviceSynchronize();
-           leap_step<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
+           leap_step<<<nBlocks, BLOCK_SIZE>>>(d_planet->pos, d_planet->vel);
            cudaDeviceSynchronize();
-           accel<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
+           accel<<<nBlocks, BLOCK_SIZE>>>(d_planet->pos, d_planet->vel);
            cudaDeviceSynchronize();
     }
     if (mstep % nout == 0)			/* if last output wanted    */
-        printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos);
+        printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet->pos);
 
     free(buf);
     cudaFree(d_buf);
@@ -132,7 +132,7 @@ __global__ void accel(double *pos, double *vel){
     const unsigned int tdx = threadIdx;
 
     double ax = 0.0, ay = 0.0, az = 0.0;
-    double d_x = pos[i].pos[0], d_y = pos[i].pos[1], d_z = pos[i].pos[0];
+    double d_x = pos[i]->pos[0], d_y = pos[i]->pos[1], d_z = pos[i]->pos[0];
     double norm;
     int j, k;
 
@@ -141,9 +141,9 @@ __global__ void accel(double *pos, double *vel){
     __shared__ double sz[BLOCK_SIZE];
 
     for(j = 0; j < gridDim.x; j++){
-        sx[tdx] = pos[j * BLOCK_SIZE + tdx].pos[0];
-        sy[tdx] = pos[j * BLOCK_SIZE + tdx].pos[1];
-        sz[tdx] = pos[j * BLOCK_SIZE + tdx].pos[2];
+        sx[tdx] = pos[j * BLOCK_SIZE + tdx]->pos[0];
+        sy[tdx] = pos[j * BLOCK_SIZE + tdx]->pos[1];
+        sz[tdx] = pos[j * BLOCK_SIZE + tdx]->pos[2];
         __syncthreads();
 
         for(k = 0; k < BLOCK_SIZE; k++){
@@ -156,9 +156,9 @@ __global__ void accel(double *pos, double *vel){
     }
 
     if(i < NUM_PLANET){
-        vel[i].vel[0] += 0.5 * DT * ax;
-        vel[i].vel[1] += 0.5 * DT * ay;
-        vel[i].vel[2] += 0.5 * DT * az;
+        vel[i]->vel[0] += 0.5 * DT * ax;
+        vel[i]->vel[1] += 0.5 * DT * ay;
+        vel[i]->vel[2] += 0.5 * DT * az;
     }
 }
 
@@ -166,9 +166,9 @@ __global__ void leap_step(double *pos, double *vel){
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(i < NUM_PLANET){
-        pos[i].pos[0] += DT * vel[i].vel[0];
-        pos[i].pos[1] += DT * vel[i].vel[1];
-        pos[i].pos[2] += DT * vel[i].vel[2];
+        pos[i]->pos[0] += DT * vel[i]->vel[0];
+        pos[i]->pos[1] += DT * vel[i]->vel[1];
+        pos[i]->pos[2] += DT * vel[i]->vel[2];
     }
 }
 
@@ -181,6 +181,6 @@ __global__ void printstate(double *pos)					/* number of points         */
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < NUM_PLANET){		/* loop over all points...  */
-      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, pos[i].pos[0], pos[i].pos[1], pos[i].pos[2]);
+      	printf("%lu,%12.6f,%12.6f,%12.6f\n", i, pos[i]->pos[0], pos[i]->pos[1], pos[i]->pos[2]);
     }
 }
