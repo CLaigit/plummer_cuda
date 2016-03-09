@@ -20,12 +20,13 @@
 #define DT 0.1
 #define SOFTPARAMETER 0.00001
 
+void initialize(Planet *planet);
 
-void leapstep();				/* routine to take one step */
+__global__ void leap_step(double *pos, double *vel);
 
-void accel();					/* accel. for harmonic osc. */
+__global__ void accel(double *pos, double *vel);
 
-void printstate();				/* print out system state   */
+__global__ void printstate(double *pos);					/* number of points         */
 
 
 typedef struct Planet{          /*define a structure to store the position, velocity and dt for a planet*/
@@ -35,7 +36,7 @@ typedef struct Planet{          /*define a structure to store the position, velo
 
 void initialize(Planet *planet)
 {
-    int i, j;
+    int i;
     double x1, x2, x3, x4, x5, x6, x7;
     double radius, vra;
     double q;
@@ -87,7 +88,7 @@ int main(int argc, char **argv)
 
     /* first, set up initial conditions */
 
-    int bytes = 2*n*sizeof(double);
+    int bytes = 2 * NUM_PLANET * sizeof(double);
 
     double *buf = (double*)malloc(bytes);
     double *d_buf;
