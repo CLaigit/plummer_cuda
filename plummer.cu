@@ -33,9 +33,9 @@ typedef struct Planet{          /*define a structure to store the position, velo
 } Planet;
 
 void initialize(Planet *planet);
-__global__ void leap_step(double *pos, double *vel);
-__global__ void accel(double *pos, double *vel);
-__global__ void printstate(double *pos);					/* number of points         */
+__global__ void leap_step(Vec_3 *pos, Vec_3 *vel);
+__global__ void accel(Vec_3 *pos, Vec_3 *vel);
+__global__ void printstate(Vec_3 *pos);					/* number of points         */
 
 
 void initialize(Planet *planet)
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
  * as a mapping from t to t + dt.  WARNING: this integrator is not
  * accurate unless the timestep dt is fixed from one call to another.
  */
-__global__ void accel(double *pos, double *vel){
+__global__ void accel(Vec_3 *pos, Vec_3 *vel){
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int tdx = threadIdx;
 
@@ -167,7 +167,7 @@ __global__ void accel(double *pos, double *vel){
     }
 }
 
-__global__ void leap_step(double *pos, double *vel){
+__global__ void leap_step(Vec_3 *pos, Vec_3 *vel){
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(i < NUM_PLANET){
@@ -181,7 +181,7 @@ __global__ void leap_step(double *pos, double *vel){
  * PRINTSTATE: output system state variables.
  */
 
-__global__ void printstate(double *pos)					/* number of points         */
+__global__ void printstate(Vec_3 *pos)					/* number of points         */
 {
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
