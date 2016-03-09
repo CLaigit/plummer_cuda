@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
     /* first, set up initial conditions */
 
-    int bytes = 2 * NUM_PLANET * sizeof(double);
+    const size_t bytes = 2 * NUM_PLANET * sizeof(Vec_3);
 
     double *buf = (double*)malloc(bytes);
     double *d_buf;
@@ -186,6 +186,6 @@ __global__ void printstate(Vec_3 *pos)					/* number of points         */
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < NUM_PLANET){		/* loop over all points...  */
-      	printf("%d,%12.6f,%12.6f,%12.6f", i, pos[i].x, pos[i].y, pos[i].z);
+      	printf("%d,%12.6f,%12.6f,%12.6f\n", i, pos[i].x, pos[i].y, pos[i].z);
     }
 }
