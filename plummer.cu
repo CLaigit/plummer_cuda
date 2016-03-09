@@ -186,6 +186,6 @@ __global__ void printstate(Vec_3 *pos)					/* number of points         */
     const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < NUM_PLANET){		/* loop over all points...  */
-      	printf("%d,%12.6f,%12.6f,%12.6f\n", i, pos[i].x, pos[i].y, pos[i].z);
+      	printf("%d,%12.6f,%12.6f,%12.6f", i, pos[i].x, pos[i].y, pos[i].z);
     }
 }
