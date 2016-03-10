@@ -60,9 +60,9 @@ void initialize(Planet *planet)
         x7 = (double)rand() / (double)RAND_MAX;
 
         radius =  pow( (pow(x1, (-2.0/3.0)) - 1), -0.5 );
-        planet.pos[i]->z =  (1.0 - 2.0*x2) * radius;
-        planet.pos[i]->x =  pow( radius*radius - planet.pos[i]->z*planet.pos[i]->z, 0.5 ) * cos(2.0 * PI * x3);
-        planet.pos[i]->y =  pow( radius*radius - planet.pos[i]->z*planet.pos[i]->z, 0.5 ) * sin(2.0 * PI * x3);
+        planet->pos[i].z =  (1.0 - 2.0*x2) * radius;
+        planet->pos[i].x =  pow( radius*radius - planet->pos[i].z*planet->pos[i].z, 0.5 ) * cos(2.0 * PI * x3);
+        planet->pos[i].y =  pow( radius*radius - planet->pos[i].z*planet->pos[i].z, 0.5 ) * sin(2.0 * PI * x3);
 
 
         // while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
@@ -78,9 +78,9 @@ void initialize(Planet *planet)
         //planet[i]->vel->0] =  pow( vra * vra planet[i]->ve->2] planet[i]->ve->2], 0.5) * cos(2.0 * PI * x7);
         //planet[i]->vel->1] =  pow( vra * vra planet[i]->ve->2] planet[i]->ve->2], 0.5) * sin(2.0 * PI * x7);
 
-        planet.vel[i]->x =  0;
-        planet.vel[i]->y =  0;
-        planet.vel[i]->z =  0;
+        planet->vel[i].x =  0;
+        planet->vel[i].y =  0;
+        planet->vel[i].z =  0;
     }
 }
 
