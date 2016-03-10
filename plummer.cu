@@ -109,18 +109,18 @@ int main(int argc, char **argv)
 
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
 
-    // for (nstep = 0; nstep < mstep; nstep++){	/* loop mstep times in all  */
-	//        if (nstep % nout == 0)			/* if time to output state  */
-	//            printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos);		/* then call output routine */
-    //        cudaDeviceSynchronize();
-    //        accel<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
-    //        cudaDeviceSynchronize();
-    //        leap_step<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
-    //        cudaDeviceSynchronize();
-    //        accel<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
-    //        cudaDeviceSynchronize();
-    // }
-    // if (mstep % nout == 0)			/* if last output wanted    */
+    for (nstep = 0; nstep < mstep; nstep++){	/* loop mstep times in all  */
+	       if (nstep % nout == 0)			/* if time to output state  */
+	           printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos);		/* then call output routine */
+           cudaDeviceSynchronize();
+           accel<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
+           cudaDeviceSynchronize();
+           leap_step<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
+           cudaDeviceSynchronize();
+           accel<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos, d_planet.vel);
+           cudaDeviceSynchronize();
+    }
+    if (mstep % nout == 0)			/* if last output wanted    */
         printstate<<<nBlocks, BLOCK_SIZE>>>(d_planet.pos);
 
     free(buf);
