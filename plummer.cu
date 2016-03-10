@@ -16,7 +16,7 @@
 #define BLOCK_SIZE 256
 #define GM 1
 #define PI 3.14159265359
-#define NUM_PLANET 1024
+#define NUM_PLANET 10240
 #define DT 0.1
 #define SOFTPARAMETER 0.00001
 
