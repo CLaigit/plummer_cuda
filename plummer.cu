@@ -65,22 +65,21 @@ void initialize(Planet *planet)
         planet->pos[i].y =  pow( radius*radius - planet->pos[i].z*planet->pos[i].z, 0.5 ) * sin(2.0 * PI * x3);
 
 
-        // while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
-        //     x4 = (double)rand() / (double)RAND_MAX;
-        //     x5 = (double)rand() / (double)RAND_MAX;
-        // }
-        //
-        // q = x4;
-        //
-        //
-        // vra =  q * pow(2.0, 0.5) * pow(1 planet[i]->r ->anet[i]->r,->0.25);					/* set initial position */
-        //planet[i]->vel->2] =  (1.0 - 2.0 * x6) * vra;
-        //planet[i]->vel->0] =  pow( vra * vra planet[i]->ve->2] planet[i]->ve->2], 0.5) * cos(2.0 * PI * x7);
-        //planet[i]->vel->1] =  pow( vra * vra planet[i]->ve->2] planet[i]->ve->2], 0.5) * sin(2.0 * PI * x7);
+        while(0.1 * x5 >= ( x4 * x4 * pow((1 - x4 * x4), 3.5) )  ){
+            x4 = (double)rand() / (double)RAND_MAX;
+            x5 = (double)rand() / (double)RAND_MAX;
+        }
 
-        planet->vel[i].x =  0;
-        planet->vel[i].y =  0;
-        planet->vel[i].z =  0;
+        q = x4;
+
+        vra =  q * pow(2.0, 0.5) * pow(1 + radius * radius, -0.25);					/* set initial position */
+        planet->vel[i].z =  (1.0 - 2.0 * x6) * vra;
+        planet->vel[i].x =  pow( vra * vra - planet->vel[i].z * planet->vel[i].z, 0.5) * cos(2.0 * PI * x7);
+        planet->vel[i].y =  pow( vra * vra - planet->vel[i].z * planet->vel[i].z, 0.5) * sin(2.0 * PI * x7);
+        // 
+        // planet->vel[i].x =  0;
+        // planet->vel[i].y =  0;
+        // planet->vel[i].z =  0;
     }
 }
 
