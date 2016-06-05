@@ -84,16 +84,16 @@ int main (int argc, char *argv[]){
         output[i] = 0;
     }
 
+    const size_t bytes_input = LATTICE_2 * sizeof(int);
+    const size_t bytes_output = LATTICE_2 * sizeof(int);
+
     // Set dimensions of block and grid
     dim3 grid(numblocksX, numblocksY, 1);
     dim3 thread(numthreadx, numthready,1);
 
-    // beta is a parameter in the probability
-    double beta = 1.0 / BOLTZMANN_CONST / T;
-
     // Allocate memoery in device and copy from host to device
     cudaMalloc((void **)&d_input, bytes_input);
-    cudaMalloc((void **)&d_energy, bytes_input);
+    cudaMalloc((void **)&d_output, bytes_output);
 
     cudaMemcpy(d_input, input, bytes_input, cudaMemcpyHostToDevice);
 
