@@ -1,28 +1,3 @@
-/*
-Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
-*/
-
-/*
-* TODO:
-*   1. Calculate the energy in the program
-*   2. Calculate the heat capacity in the program
-*   3. Add more inputs to adjust the length of input
-*   4. A matlab code to plot data.
-*       data format example:
-*                    position.x  position.y   spin(-1, 1)
-*       Iteattion 1:    1           4               -1
-*                       *           *                *
-*                       *           *                *
-*       Iteattion 2:    4           3                1
-*                       *           *                *
-*                       *           *                *
-*       Iteattion N:    35          76               1
-*                       *           *                *
-*                       *           *                *
-*   5. Compare the numerical value with the analytic value
-*   6. Move to 3D
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
