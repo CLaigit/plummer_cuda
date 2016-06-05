@@ -95,12 +95,20 @@ int main (int argc, char *argv[]){
     cudaMalloc((void **)&d_output, bytes_output);
 
     cudaMemcpy(d_input, input, bytes_input, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_output, output, bytes_output, cudaMemcpyHostToDevice);
+
+    printf("test1\n");
 
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
+    printf("test2\n");
 
     reduce0<<<grid, thread>>>(d_input, d_output);
     printstate<<<grid, thread>>>(d_input);
+    printf("test3\n");
 
     free(input);
     cudaFree(d_input);
+
+    free(output);
+    cudaFree(d_output);
 }
