@@ -101,10 +101,11 @@ int main (int argc, char *argv[]){
 
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
-    // reduce0<<<grid, thread>>>(d_input, d_output);
-    // cudaDeviceSynchronize();
+    reduce0<<<grid, thread>>>(d_input, d_output);
+    cudaDeviceSynchronize();
 
     printstate<<<grid, thread>>>(d_output);
+    cudaDeviceSynchronize();
 
     free(input);
     cudaFree(d_input);
