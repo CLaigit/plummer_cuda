@@ -104,7 +104,7 @@ int main (int argc, char *argv[]){
     reduce0<<<grid, thread>>>(d_input, d_output);
     cudaDeviceSynchronize();
 
-    printstate<<<grid, thread>>>(d_output);
+    printstate<<<grid, thread>>>(d_input);
 
     free(input);
     cudaFree(d_input);
