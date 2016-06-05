@@ -32,7 +32,6 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 
 #define  LATTICE_LENGTH 256
 #define  LATTICE_2 (LATTICE_LENGTH * LATTICE_LENGTH)
-#define  BOLTZMANN_CONST 1
 #define  N LATTICE_LENGTH
 
 __global__ void reduce0(int *g_idata, int *g_odata)
@@ -100,7 +99,7 @@ int main (int argc, char *argv[]){
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
     reduce0<<<grid, thread>>>(d_input, d_output);
-    printstate<<<grid, thread>>>(d_output);
+    printstate<<<grid, thread>>>(d_input);
 
     free(input);
     cudaFree(d_input);
