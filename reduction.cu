@@ -30,7 +30,7 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 #include <curand.h>
 #include <curand_kernel.h>
 
-#define  LATTICE_LENGTH 256
+#define  LATTICE_LENGTH 20
 #define  LATTICE_2 (LATTICE_LENGTH * LATTICE_LENGTH)
 #define  N LATTICE_LENGTH
 
@@ -104,7 +104,7 @@ int main (int argc, char *argv[]){
     reduce0<<<grid, thread>>>(d_input, d_output);
     cudaDeviceSynchronize();
 
-    printstate<<<grid, thread>>>(d_input);
+    printstate<<<grid, thread>>>(d_output);
 
     free(input);
     cudaFree(d_input);
