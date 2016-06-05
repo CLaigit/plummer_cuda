@@ -41,10 +41,9 @@ __global__ void reduce0(int *g_idata, int *g_odata)
     unsigned int tid = threadIdx.x;
     unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
 
-    printf("kernel1\n");
+    fprintf(stderr, "%d\n", i);
     sdata[tid] = g_idata[i];
     __syncthreads();
-    printf("kernel2\n");
     // do reduction in shared mem
     for(unsigned int s=1; s < blockDim.x; s *= 2) {
         if (tid % (2*s) == 0) {
@@ -52,7 +51,6 @@ __global__ void reduce0(int *g_idata, int *g_odata)
         }
         __syncthreads();
     }
-    printf("kernel3\n");
 
     // write result for this block to global mem
     if (tid == 0) g_odata[blockIdx.x] = sdata[0];
