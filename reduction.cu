@@ -41,7 +41,6 @@ __global__ void reduce0(int *g_idata, int *g_odata)
     unsigned int tid = threadIdx.x;
     unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
 
-    printf("%d\n", i);
     sdata[tid] = g_idata[i];
     __syncthreads();
     // do reduction in shared mem
@@ -102,7 +101,9 @@ int main (int argc, char *argv[]){
 
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
-    // reduce0<<<grid, thread>>>(d_input, d_output);
+    reduce0<<<grid, thread>>>(d_input, d_output);
+    cudaDeviceSynchronize();
+
     printstate<<<grid, thread>>>(d_input);
 
     free(input);
