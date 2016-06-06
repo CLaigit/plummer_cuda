@@ -19,7 +19,7 @@ __global__ void reduce0(int *g_idata, int *g_odata)
     unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
 
-    sdata[tid] = g_idata[i + j * N];
+    sdata[tidx] = g_idata[i + j * N];
     __syncthreads();
     // do reduction in shared mem
     for(unsigned int s=1; s < blockDim.x; s *= 2) {
@@ -38,14 +38,14 @@ __global__ void reduce0(int *g_idata, int *g_odata)
 __global__ void test(int *input, int *output){
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (idx < N && idy < N){
-        for(int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++){
-                output[0] += input[]
-            }
-
-    }
+    // 
+    // if (idx < N && idy < N){
+    //     for(int i = 0; i < N; i++)
+    //         for (int j = 0; j < N; j++){
+    //             output[0] += input[]
+    //         }
+    //
+    // }
 }
 
 
