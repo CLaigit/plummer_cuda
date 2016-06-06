@@ -13,10 +13,13 @@ __global__ void reduce0(int *g_idata, int *g_odata)
 {
     extern __shared__ int sdata[];
     // each thread loads one element from global to shared mem
-    unsigned int tid = threadIdx.x;
-    unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
+    unsigned int tidx = threadIdx.x;
+    unsigned int tidy = threadIdx.y;
 
-    sdata[tid] = g_idata[i];
+    unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    sdata[tid] = g_idata[i + j * N];
     __syncthreads();
     // do reduction in shared mem
     for(unsigned int s=1; s < blockDim.x; s *= 2) {
@@ -32,12 +35,16 @@ __global__ void reduce0(int *g_idata, int *g_odata)
     printf("die\n");
 }
 
-__global__ void test(int *list){
+__global__ void test(int *input, int *output){
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (idx < N && idy < N){
-        lattice[idx + idy * N] = 2;
+        for(int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++){
+                output[0] += input[]
+            }
+
     }
 }
 
@@ -91,9 +98,14 @@ int main (int argc, char *argv[]){
     // reduce0<<<grid, thread>>>(d_input, d_output);
     // cudaDeviceSynchronize();
 
-    test<<<grid, thread>>>(d_output);
-    cudaDeviceSynchronize();
+    // test<<<grid, thread>>>(d_input, output);
+    // cudaDeviceSynchronize();
 
+    for (int i = 0; i < N ; i++){
+        for (int j = 0; j < N; j++){
+            d_output[0] += d_input[i + j * N];
+        }
+    }
     printstate<<<grid, thread>>>(d_output);
     cudaDeviceSynchronize();
 
