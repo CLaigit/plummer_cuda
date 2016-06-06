@@ -28,7 +28,19 @@ __global__ void reduce0(int *g_idata, int *g_odata)
 
     // write result for this block to global mem
     if (tid == 0) g_odata[blockIdx.x] = sdata[0];
+
+    printf("die\n");
 }
+
+__global__ void test(int *list){
+    const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (idx < N && idy < N){
+        lattice[idx + idy * N] = 2;
+    }
+}
+
 
 __global__ void printstate(int* output) {
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -76,7 +88,10 @@ int main (int argc, char *argv[]){
 
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
-    reduce0<<<grid, thread>>>(d_input, d_output);
+    // reduce0<<<grid, thread>>>(d_input, d_output);
+    // cudaDeviceSynchronize();
+
+    test<<<grid, thread>>>(d_output);
     cudaDeviceSynchronize();
 
     printstate<<<grid, thread>>>(d_output);
