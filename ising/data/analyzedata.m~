@@ -1,0 +1,3 @@
+clear
+data = csvread('ising_cuda_T2.dat');
+result = sum(data(:,3)) / max(size(data));
