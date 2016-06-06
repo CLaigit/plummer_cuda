@@ -39,7 +39,7 @@ __global__ void test(int *input, int *output){
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (idx = 0 && idy = 0){
+    if (idx == 0 && idy == 0){
         for(int i = 0; i < N; i++){
             for (int j = 0; j < N; j++){
                 output[0] += input[ i + j * N ];
