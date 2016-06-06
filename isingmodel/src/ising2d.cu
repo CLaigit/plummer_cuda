@@ -244,17 +244,17 @@ int main (int argc, char *argv[]){
         if(nstep % warp == 0)
             fprintf(stderr,"Measure Iteration: %d\n", nstep);
     }
-    printstate<<<grid, thread>>>(d_energy);
+    // printstate<<<grid, thread>>>(d_energy);
 
     cudaMemcpy(energy, d_energy, bytes_energy, cudaMemcpyDeviceToHost);
 
-    // int sum = 0;
-    // for (int i = 0; i < N ; i++){
-    //     for (int j = 0; j < N; j++){
-    //         sum += energy[i + j * N];
-    //     }
-    // }
-    // printf("%f\n", 1.0 * sum / LATTICE_2);
+    int sum = 0;
+    for (int i = 0; i < N ; i++){
+        for (int j = 0; j < N; j++){
+            sum += energy[i + j * N];
+        }
+    }
+    printf("%f\n", 1.0 * sum / LATTICE_2);
     // printstate<<<grid, thread>>>(d_energy);
 
 
