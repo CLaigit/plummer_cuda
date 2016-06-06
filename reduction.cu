@@ -93,14 +93,16 @@ int main (int argc, char *argv[]){
 
     cudaMemcpy(output, d_output, bytes_output, cudaMemcpyDeviceToHost);
 
+    test<<<grid, thread>>>(d_input, d_output);
+
     int sum = 0;
     for (int i = 0; i < N ; i++){
         for (int j = 0; j < N; j++){
             sum += output[i + j * N];
         }
     }
-    // printf("%d\n", sum);
-    printstate<<<grid, thread>>>(d_output);
+    printf("%d\n", sum);
+    // printstate<<<grid, thread>>>(d_output);
     cudaDeviceSynchronize();
 
     free(input);
