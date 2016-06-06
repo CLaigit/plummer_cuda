@@ -203,7 +203,6 @@ int main (int argc, char *argv[]){
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
     // Warmup process
-    initalEnergy<<<grid, thread>>>(d_lattice, d_energy);
 
     for (int iter = 0; iter < warmsteps; iter++){
         update<<<grid, thread>>>(d_lattice, d_energy, 0, beta);
@@ -212,6 +211,8 @@ int main (int argc, char *argv[]){
         if(iter % warp == 0)
             fprintf(stderr,"Warmup Iteration: %d\n", iter);
     }
+    initalEnergy<<<grid, thread>>>(d_lattice, d_energy);
+    printstate<<<grid, thread>>>(d_energy);
 
     // Measure process
     for (int nstep = 0; nstep < nout; nstep++){
@@ -225,13 +226,13 @@ int main (int argc, char *argv[]){
 
     cudaMemcpy(energy, d_energy, bytes_energy, cudaMemcpyDeviceToHost);
 
-    int sum = 0;
-    for (int i = 0; i < N ; i++){
-        for (int j = 0; j < N; j++){
-            sum += energy[i + j * N];
-        }
-    }
-    printf("%f\n", 1.0 * sum / LATTICE_2);
+    // int sum = 0;
+    // for (int i = 0; i < N ; i++){
+    //     for (int j = 0; j < N; j++){
+    //         sum += energy[i + j * N];
+    //     }
+    // }
+    // printf("%f\n", 1.0 * sum / LATTICE_2);
     // printstate<<<grid, thread>>>(d_energy);
 
 
