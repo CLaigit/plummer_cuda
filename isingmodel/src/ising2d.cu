@@ -95,7 +95,7 @@ __global__ void update(int* lattice, const unsigned int offset, double beta){
             // If deltaE < 0 or pro_rand <= e^(-beta * deltaE), accept new value
             if (pro_rand <= exp(- beta * deltaE)){
                 lattice[idx + idy * N ] = flip;
-                energy[idx + idy * N] += 1.0 * deltaE / TIME_LENGTH;
+                // energy[idx + idy * N] += 1.0 * deltaE / TIME_LENGTH;
             }
         }
     }
