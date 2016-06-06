@@ -42,10 +42,10 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 #define  N LATTICE_LENGTH
 #define  TIME_LENGTH 1e3
 
-__global__ void update(int* lattice, int* energy, const unsigned int offset, double beta);
-__global__ void printstate(int *lattice);
-__global__ void initalEnergy(int* lattice, int* energy);
-__device__ int local_energy(int up, int down, int left, int right, int center);
+__global__ void update(int* lattice, double* energy, const unsigned int offset, double beta);
+__global__ void printstate(double *energy);
+__global__ void initalEnergy(int* lattice, double* energy);
+__device__ double local_energy(int up, int down, int left, int right, int center);
 
 /*
 *   update is the function to update a point
@@ -55,7 +55,7 @@ __device__ int local_energy(int up, int down, int left, int right, int center);
 *   4. if the energy is larger, generate a random number pro_rand (0,1),
 *      if pro_rand < e^(-beta * delatE), aceept. else reject.
 */
-__global__ void update(int* lattice, int* energy, const unsigned int offset, double beta){
+__global__ void update(int* lattice, double* energy, const unsigned int offset, double beta){
     // Calculate the global index
     // Calculate the global index for the up, down, left, right index.
     const unsigned int idx = blockIdx.x * blockDim.y + threadIdx.x;
@@ -104,12 +104,12 @@ __global__ void update(int* lattice, int* energy, const unsigned int offset, dou
 *   index of the matrx.
 *   it prints (x, y, (1 or -1)).
 */
-__global__ void printstate(int* lattice) {
+__global__ void printstate(double* energy) {
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (idx < N && idy < N){
-        printf("%d, %d, %d\n", idx, idy, lattice[idx + idy * N]);
+        printf("%d, %d, %f\n", idx, idy, energy[idx + idy * N]);
     }
 }
 
@@ -118,7 +118,7 @@ __global__ void printstate(int* lattice) {
 *   energy is the function used to calculate the energy between
 *   (center, up), (center, down), (center, left), (center, right)
 */
-__device__ int local_energy(int up, int down, int left, int right, int center){
+__device__ double local_energy(int up, int down, int left, int right, int center){
     return -center * (up + down + left + right);
 }
 
@@ -152,8 +152,8 @@ int main (int argc, char *argv[]){
     int *lattice;
     int *d_lattice;
 
-    int *energy;
-    int *d_energy;
+    double *energy;
+    double *d_energy;
 
     double T = 2;
     int warmsteps = 1e3;
@@ -171,17 +171,17 @@ int main (int argc, char *argv[]){
 
     // Define the size of lattice and energy
     const size_t bytes_lattice = LATTICE_2 * sizeof(int);
-    const size_t bytes_energy = sizeof(int);
+    const size_t bytes_energy = sizeof(double);
 
     // Allocate memory for lattice. It is a lattice^2 long array.
     // The value can only be 1 or -1.
     lattice = (int*)malloc(LATTICE_2 * sizeof(int));
-    energy = (int*)malloc(LATTICE_2 * sizeof(int));
+    energy = (double*)malloc(LATTICE_2 * sizeof(double));
 
     // initialize lattice by rand(-1, 1)
     for(int i = 0; i < LATTICE_2; i++){
         lattice[i] = 2 * (rand() % 2) - 1;
-        energy[i] = 0;
+        energy[i] = 0.0;
         //lattice[i] = 1;
     }
 
