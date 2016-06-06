@@ -91,9 +91,9 @@ int main (int argc, char *argv[]){
 
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
-    cudaMemcpy(output, d_output, bytes_output, cudaMemcpyDeviceToHost);
 
     test<<<grid, thread>>>(d_input, d_output);
+    cudaMemcpy(output, d_output, bytes_output, cudaMemcpyDeviceToHost);
 
     int sum = 0;
     for (int i = 0; i < N ; i++){
