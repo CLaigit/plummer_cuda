@@ -228,8 +228,8 @@ int main (int argc, char *argv[]){
     // Warmup process
 
     for (int iter = 0; iter < warmsteps; iter++){
-        update<<<grid, thread>>>(d_lattice, d_energy, 0, beta);
-        update<<<grid, thread>>>(d_lattice, d_energy, 1, beta);
+        update<<<grid, thread>>>(d_lattice, 0, beta);
+        update<<<grid, thread>>>(d_lattice, 1, beta);
         // cudaDeviceSynchronize();
         if(iter % warp == 0)
             fprintf(stderr,"Warmup Iteration: %d\n", iter);
