@@ -7,6 +7,8 @@ OBJS3 = src/ising2d.cu
 LIB = -lm
 # CFLAG = -arch=sm_20
 CFLAG += -Wall
+CFLAG += -std=c99
+
 
 ifdef gflag
  CFLAG += -g
