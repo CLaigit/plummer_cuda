@@ -204,7 +204,6 @@ int main (int argc, char *argv[]){
 
     // Warmup process
     initalEnergy<<<grid, thread>>>(d_lattice, d_energy);
-    printstate<<<grid, thread>>>(d_energy);
 
     for (int iter = 0; iter < warmsteps; iter++){
         update<<<grid, thread>>>(d_lattice, d_energy, 0, beta);
@@ -233,6 +232,7 @@ int main (int argc, char *argv[]){
     //     }
     // }
     // printf("%f\n", 1.0 * sum / LATTICE_2);
+    printstate<<<grid, thread>>>(d_energy);
 
 
     free(lattice);
