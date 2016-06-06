@@ -53,7 +53,7 @@ __global__ void printstate(int* output) {
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (idx < N && idy < N){
+    if (idx == 0 && idy == 0){
         printf("%d, %d, %d\n", idx, idy, output[idx + idy * N]);
     }
 }
