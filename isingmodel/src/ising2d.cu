@@ -42,7 +42,7 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 #define  N LATTICE_LENGTH
 #define  TIME_LENGTH 1e3
 
-__global__ void update(int* lattice, double* energy, const unsigned int offset, double beta);
+__global__ void update(int* lattice, const unsigned int offset, double beta);
 __global__ void printstate(double *energy);
 __global__ void initalEnergy(int* lattice, double* energy);
 __device__ double local_energy(int up, int down, int left, int right, int center);
@@ -58,7 +58,7 @@ __global__ void updateEnergy(int* lattice, double* energy);
 *   4. if the energy is larger, generate a random number pro_rand (0,1),
 *      if pro_rand < e^(-beta * delatE), aceept. else reject.
 */
-__global__ void update(int* lattice, double* energy, const unsigned int offset, double beta){
+__global__ void update(int* lattice, const unsigned int offset, double beta){
     // Calculate the global index
     // Calculate the global index for the up, down, left, right index.
     const unsigned int idx = blockIdx.x * blockDim.y + threadIdx.x;
