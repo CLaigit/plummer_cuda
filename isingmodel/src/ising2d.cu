@@ -45,7 +45,7 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 __global__ void update(int* lattice, int* energy, const unsigned int offset, double beta);
 __global__ void update(int *lattice, unsigned int offset);
 __global__ void printstate(int *lattice);
-__global__ int initalEnergy(int* lattice, int* energy);
+__global__ void initalEnergy(int* lattice, int* energy);
 
 
 /*
@@ -123,7 +123,7 @@ __device__ int energy(int up, int down, int left, int right, int center){
     return -center * (up + down + left + right);
 }
 
-__global__ int initalEnergy(int* lattice, int* energy){
+__global__ void initalEnergy(int* lattice, int* energy){
     const unsigned int idx = blockIdx.x * blockDim.y + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
     const unsigned int idx_l = (idx - 1 + N) % N;
