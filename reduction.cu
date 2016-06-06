@@ -8,37 +8,37 @@
 #define  LATTICE_LENGTH 256
 #define  LATTICE_2 (LATTICE_LENGTH * LATTICE_LENGTH)
 #define  N LATTICE_LENGTH
-
-__global__ void reduce0(int *g_idata, int *g_odata)
-{
-    extern __shared__ int sdata[];
-    // each thread loads one element from global to shared mem
-    unsigned int tidx = threadIdx.x;
-    unsigned int tidy = threadIdx.y;
-
-    unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-
-    sdata[tidx] = g_idata[i + j * N];
-    __syncthreads();
-    // do reduction in shared mem
-    for(unsigned int s=1; s < blockDim.x; s *= 2) {
-        if (tid % (2*s) == 0) {
-            sdata[tid] += sdata[tid + s];
-        }
-        __syncthreads();
-    }
-
-    // write result for this block to global mem
-    if (tid == 0) g_odata[blockIdx.x] = sdata[0];
-
-    printf("die\n");
-}
+// 
+// __global__ void reduce0(int *g_idata, int *g_odata)
+// {
+//     extern __shared__ int sdata[];
+//     // each thread loads one element from global to shared mem
+//     unsigned int tidx = threadIdx.x;
+//     unsigned int tidy = threadIdx.y;
+//
+//     unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+//     unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
+//
+//     sdata[tidx] = g_idata[i + j * N];
+//     __syncthreads();
+//     // do reduction in shared mem
+//     for(unsigned int s=1; s < blockDim.x; s *= 2) {
+//         if (tid % (2*s) == 0) {
+//             sdata[tid] += sdata[tid + s];
+//         }
+//         __syncthreads();
+//     }
+//
+//     // write result for this block to global mem
+//     if (tid == 0) g_odata[blockIdx.x] = sdata[0];
+//
+//     printf("die\n");
+// }
 
 __global__ void test(int *input, int *output){
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
-    // 
+    //
     // if (idx < N && idy < N){
     //     for(int i = 0; i < N; i++)
     //         for (int j = 0; j < N; j++){
