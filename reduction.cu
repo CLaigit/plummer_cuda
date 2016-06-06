@@ -39,12 +39,8 @@ __global__ void test(int *input, int *output){
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (idx == 0 && idy == 0){
-        for(int i = 0; i < N; i++){
-            for (int j = 0; j < N; j++){
-                output[0] += input[ i + j * N ];
-            }
-        }
+    if (idx < N && idy < N){
+        output[idx + idy * N] = input[idx + idy * N];
     }
 }
 
@@ -53,7 +49,7 @@ __global__ void printstate(int* output) {
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (idx == 0 && idy == 0){
+    if (idx < N && idy < N){
         printf("%d, %d, %d\n", idx, idy, output[idx + idy * N]);
     }
 }
@@ -95,18 +91,16 @@ int main (int argc, char *argv[]){
 
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
-    // reduce0<<<grid, thread>>>(d_input, d_output);
-    // cudaDeviceSynchronize();
+    cudaMemcpy(output, d_output, bytes_output, cudaMemcpyDeviceToHost);
 
-    test<<<grid, thread>>>(d_input, d_output);
-    cudaDeviceSynchronize();
-
-    // for (int i = 0; i < N ; i++){
-    //     for (int j = 0; j < N; j++){
-    //         d_output[0] += d_input[i + j * N];
-    //     }
-    // }
-    printstate<<<grid, thread>>>(d_output);
+    int sum = 0;
+    for (int i = 0; i < N ; i++){
+        for (int j = 0; j < N; j++){
+            sum += output[i + j * N];
+        }
+    }
+    printf("%d\n", sum);
+    // printstate<<<grid, thread>>>(d_output);
     cudaDeviceSynchronize();
 
     free(input);
