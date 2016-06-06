@@ -223,13 +223,14 @@ int main (int argc, char *argv[]){
     }
 
     cudaMemcpy(energy, d_energy, bytes_energy, cudaMemcpyDeviceToHost);
-
-    int sum = 0;
-    for (int i = 0; i < N ; i++){
-        for (int j = 0; j < N; j++){
-            sum += energy[i + j * N];
-        }
-    }
+    //
+    // int sum = 0;
+    // for (int i = 0; i < N ; i++){
+    //     for (int j = 0; j < N; j++){
+    //         sum += energy[i + j * N];
+    //     }
+    // }
+    printstate<<<grid, thread>>>(d_energy);
     printf("%f\n", 1.0 * sum / LATTICE_2);
 
     free(lattice);
