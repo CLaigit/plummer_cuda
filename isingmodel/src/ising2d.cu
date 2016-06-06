@@ -55,7 +55,7 @@ __global__ void printstate(int *lattice);
 *   4. if the energy is larger, generate a random number pro_rand (0,1),
 *      if pro_rand < e^(-beta * delatE), aceept. else reject.
 */
-__global__ void update(int* lattice, const unsigned int offset, double beta){
+__global__ void update(int* lattice, int* energy, const unsigned int offset, double beta){
     // Calculate the global index
     // Calculate the global index for the up, down, left, right index.
     const unsigned int idx = blockIdx.x * blockDim.y + threadIdx.x;
@@ -92,7 +92,7 @@ __global__ void update(int* lattice, const unsigned int offset, double beta){
             // If deltaE < 0 or pro_rand <= e^(-beta * deltaE), accept new value
             if (pro_rand <= exp(- beta * deltaE)){
                 lattice[idx + idy * N ] = flip;
-                d_energy[idx + idy * N] += 1.0 * deltaE / TIME_LENGTH;
+                energy[idx + idy * N] += 1.0 * deltaE / TIME_LENGTH;
             }
         }
     }
@@ -129,9 +129,7 @@ __global__ int initalEnergy(int* lattice, int* energy){
     const unsigned int idx_r = (idx + 1 + N) % N;
     const unsigned int idy_u = (idy - 1 + N) % N;
     const unsigned int idy_d = (idy + 1 + N) % N;
-    int flip, up, down, left, right, center;
-    double pro_rand;
-    double deltaE;
+    int up, down, left, right, center;
 
     up = lattice[idx + idy_u * N];
     down = lattice[idx + idy_d * N];
