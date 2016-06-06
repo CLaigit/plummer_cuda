@@ -42,9 +42,10 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 #define  N LATTICE_LENGTH
 #define  TIME_LENGTH 1e3
 
-__device__ int energy(int up, int down, int left, int right, int center);
+__global__ void update(int* lattice, int* energy, const unsigned int offset, double beta)
 __global__ void update(int *lattice, unsigned int offset);
 __global__ void printstate(int *lattice);
+__global__ int initalEnergy(int* lattice, int* energy){
 
 
 /*
