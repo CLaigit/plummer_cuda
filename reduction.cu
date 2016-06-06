@@ -99,8 +99,8 @@ int main (int argc, char *argv[]){
             sum += output[i + j * N];
         }
     }
-    printf("%d\n", sum);
-    // printstate<<<grid, thread>>>(d_output);
+    // printf("%d\n", sum);
+    printstate<<<grid, thread>>>(d_output);
     cudaDeviceSynchronize();
 
     free(input);
