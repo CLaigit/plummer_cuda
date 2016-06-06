@@ -212,17 +212,15 @@ int main (int argc, char *argv[]){
             fprintf(stderr,"Warmup Iteration: %d\n", iter);
     }
     initalEnergy<<<grid, thread>>>(d_lattice, d_energy);
-    printstate<<<grid, thread>>>(d_energy);
 
     // Measure process
     for (int nstep = 0; nstep < nout; nstep++){
         update<<<grid, thread>>>(d_lattice, d_energy, 0, beta);
         update<<<grid, thread>>>(d_lattice, d_energy, 1, beta);
-        // cudaDeviceSynchronize();
-        // printstate<<<grid, thread>>>(d_lattice);
         if(nstep % warp == 0)
             fprintf(stderr,"Measure Iteration: %d\n", nstep);
     }
+    printstate<<<grid, thread>>>(d_energy);
 
     cudaMemcpy(energy, d_energy, bytes_energy, cudaMemcpyDeviceToHost);
 
