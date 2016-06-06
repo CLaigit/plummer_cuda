@@ -8,7 +8,7 @@
 #define  LATTICE_LENGTH 256
 #define  LATTICE_2 (LATTICE_LENGTH * LATTICE_LENGTH)
 #define  N LATTICE_LENGTH
-// 
+//
 // __global__ void reduce0(int *g_idata, int *g_odata)
 // {
 //     extern __shared__ int sdata[];
@@ -38,14 +38,14 @@
 __global__ void test(int *input, int *output){
     const unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
-    //
-    // if (idx < N && idy < N){
-    //     for(int i = 0; i < N; i++)
-    //         for (int j = 0; j < N; j++){
-    //             output[0] += input[]
-    //         }
-    //
-    // }
+
+    if (idx = 0 && idy = 0){
+        for(int i = 0; i < N; i++){
+            for (int j = 0; j < N; j++){
+                output[0] += input[ i + j * N ];
+            }
+        }
+    }
 }
 
 
@@ -98,14 +98,14 @@ int main (int argc, char *argv[]){
     // reduce0<<<grid, thread>>>(d_input, d_output);
     // cudaDeviceSynchronize();
 
-    // test<<<grid, thread>>>(d_input, output);
-    // cudaDeviceSynchronize();
+    test<<<grid, thread>>>(d_input, d_output);
+    cudaDeviceSynchronize();
 
-    for (int i = 0; i < N ; i++){
-        for (int j = 0; j < N; j++){
-            d_output[0] += d_input[i + j * N];
-        }
-    }
+    // for (int i = 0; i < N ; i++){
+    //     for (int j = 0; j < N; j++){
+    //         d_output[0] += d_input[i + j * N];
+    //     }
+    // }
     printstate<<<grid, thread>>>(d_output);
     cudaDeviceSynchronize();
 
