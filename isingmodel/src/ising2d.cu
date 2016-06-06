@@ -45,7 +45,7 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 __global__ void update(int* lattice, int* energy, const unsigned int offset, double beta);
 __global__ void printstate(int *lattice);
 __global__ void initalEnergy(int* lattice, int* energy);
-__device__ int energy(int up, int down, int left, int right, int center);
+__device__ int local_energy(int up, int down, int left, int right, int center);
 
 /*
 *   update is the function to update a point
@@ -86,8 +86,8 @@ __global__ void update(int* lattice, int* energy, const unsigned int offset, dou
             // Flip the center element
             flip = -center;
             // Calculate the difference between these two state
-            deltaE = energy(up, down, left, right, flip);
-            deltaE -= energy(up, down, left, right, center);
+            deltaE = local_energy(up, down, left, right, flip);
+            deltaE -= local_energy(up, down, left, right, center);
 
             // If deltaE < 0 or pro_rand <= e^(-beta * deltaE), accept new value
             if (pro_rand <= exp(- beta * deltaE)){
@@ -118,7 +118,7 @@ __global__ void printstate(int* lattice) {
 *   energy is the function used to calculate the energy between
 *   (center, up), (center, down), (center, left), (center, right)
 */
-__device__ int energy(int up, int down, int left, int right, int center){
+__device__ int local_energy(int up, int down, int left, int right, int center){
     return -center * (up + down + left + right);
 }
 
@@ -138,7 +138,7 @@ __global__ void initalEnergy(int* lattice, int* energy){
     center = lattice[idx + idy * N];
 
     if (idx < N && idy < N && idx_l < N && idx_r < N && idy_u < N && idy_d < N){
-        energy[idx + N * idy] = 1.0 * energy(up, down, left, right, center) / TIME_LENGTH;
+        energy[idx + N * idy] = 1.0 * local_energy(up, down, left, right, center) / TIME_LENGTH;
     }
 }
 
