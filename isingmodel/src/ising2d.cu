@@ -40,6 +40,7 @@ Ising model: Halmitonian H = /sum_ij J(sigma_i)(sigma_j)
 #define  LATTICE_2 (LATTICE_LENGTH * LATTICE_LENGTH)
 #define  BOLTZMANN_CONST 1
 #define  N LATTICE_LENGTH
+#define  TIME_LENGTH 1e3
 
 __device__ int energy(int up, int down, int left, int right, int center);
 __global__ void update(int *lattice, unsigned int offset);
@@ -91,6 +92,7 @@ __global__ void update(int* lattice, const unsigned int offset, double beta){
             // If deltaE < 0 or pro_rand <= e^(-beta * deltaE), accept new value
             if (pro_rand <= exp(- beta * deltaE)){
                 lattice[idx + idy * N ] = flip;
+                d_energy[idx + idy * N] += 1.0 * deltaE / TIME_LENGTH;
             }
         }
     }
@@ -120,6 +122,28 @@ __device__ int energy(int up, int down, int left, int right, int center){
     return -center * (up + down + left + right);
 }
 
+__global__ int initalEnergy(int* lattice, int* energy){
+    const unsigned int idx = blockIdx.x * blockDim.y + threadIdx.x;
+    const unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
+    const unsigned int idx_l = (idx - 1 + N) % N;
+    const unsigned int idx_r = (idx + 1 + N) % N;
+    const unsigned int idy_u = (idy - 1 + N) % N;
+    const unsigned int idy_d = (idy + 1 + N) % N;
+    int flip, up, down, left, right, center;
+    double pro_rand;
+    double deltaE;
+
+    up = lattice[idx + idy_u * N];
+    down = lattice[idx + idy_d * N];
+    left = lattice[idx_l + idy * N];
+    right = lattice[idx_r + idy * N];
+    center = lattice[idx + idy * N];
+
+    if (idx < N && idy < N && idx_l < N && idx_r < N && idy_u < N && idy_d < N){
+        energy[idx + N * idy] = 1.0 * energy(up, down, left, right, center) / TIME_LENGTH;
+    }
+}
+
 /*
 *   Commandline inputs option
 *   1. Tempurature (T)
@@ -129,10 +153,13 @@ int main (int argc, char *argv[]){
 
     int *lattice;
     int *d_lattice;
+
+    int *energy;
+    int *d_energy;
+
     double T = 2;
     int warmsteps = 1e3;
-    int nout;
-    nout = 1e5;
+    int nout = 1e3;
     int warp = 1e3;
 
     int numthreadx = 16;
@@ -155,9 +182,9 @@ int main (int argc, char *argv[]){
 
     // initialize lattice by rand(-1, 1)
     for(int i = 0; i < LATTICE_2; i++){
-            lattice[i] = 2 * (rand() % 2) - 1;
-            energy[i] = 0;
-            //lattice[i] = 1;
+        lattice[i] = 2 * (rand() % 2) - 1;
+        energy[i] = 0;
+        //lattice[i] = 1;
     }
 
     // Set dimensions of block and grid
@@ -178,9 +205,10 @@ int main (int argc, char *argv[]){
     cudaDeviceSetLimit(cudaLimitPrintfFifoSize, N * N * sizeof(int) * N);
 
     // Warmup process
+    initalEnergy<<<grid, thread>>>(d_lattice, d_energy);
     for (int iter = 0; iter < warmsteps; iter++){
-        update<<<grid, thread>>>(d_lattice, 0, beta);
-        update<<<grid, thread>>>(d_lattice, 1, beta);
+        update<<<grid, thread>>>(d_lattice, d_energy, 0, beta);
+        update<<<grid, thread>>>(d_lattice, d_energy, 1, beta);
         // cudaDeviceSynchronize();
         if(iter % warp == 0)
             fprintf(stderr,"Warmup Iteration: %d\n", iter);
@@ -188,13 +216,23 @@ int main (int argc, char *argv[]){
 
     // Measure process
     for (int nstep = 0; nstep < nout; nstep++){
-        update<<<grid, thread>>>(d_lattice, 0, beta);
-        update<<<grid, thread>>>(d_lattice, 1, beta);
+        update<<<grid, thread>>>(d_lattice, d_energy, 0, beta);
+        update<<<grid, thread>>>(d_lattice, d_energy, 1, beta);
         // cudaDeviceSynchronize();
         // printstate<<<grid, thread>>>(d_lattice);
         if(nstep % warp == 0)
             fprintf(stderr,"Measure Iteration: %d\n", nstep);
     }
+
+    cudaMemcpy(energy, d_energy, bytes_energy, cudaMemcpyDeviceToHost);
+
+    int sum = 0;
+    for (int i = 0; i < N ; i++){
+        for (int j = 0; j < N; j++){
+            sum += energy[i + j * N];
+        }
+    }
+    printf("%f\n", 1.0 * sum / LATTICE_2);
 
     free(lattice);
     cudaFree(d_lattice);
