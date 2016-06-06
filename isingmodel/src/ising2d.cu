@@ -230,8 +230,9 @@ int main (int argc, char *argv[]){
     //         sum += energy[i + j * N];
     //     }
     // }
+    // printf("%f\n", 1.0 * sum / LATTICE_2);
+
     printstate<<<grid, thread>>>(d_energy);
-    printf("%f\n", 1.0 * sum / LATTICE_2);
 
     free(lattice);
     cudaFree(d_lattice);
